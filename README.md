@@ -18,5 +18,6 @@ C 家里电脑 Home Computer
 
 -Build a FTP server
 
+-See "sftp.txt"
 
 
