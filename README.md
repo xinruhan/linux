@@ -6,8 +6,8 @@ C 家里电脑 Home Computer
 #-----------Build a Private VPN-----------#
 C->B->A
 
-#-----------FRP----------- #
-See "frp.txt"
+#-----------FRP+SHADOWSOCKS----------- #
+See "frp_shadowsocks.txt"
 
 
 
