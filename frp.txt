@@ -2,13 +2,21 @@ A 办公室电脑 Office Computer
 B 阿里云（公网ip） Alibaba_cloud server with a public ip address
 C 家里电脑  Home Computer
 
-
 # -----------Alibaba_cloud serve----------- #
 # OS: Ubuntu server 18.0
 # User: root
+# IP Address: 111.111.111.111
+# -----------Office Computer----------- #
+# OS: Ubuntu server 18.0
+# User: root
+# -----------Home Computer----------- #
+# OS: Windows 10
+
 # 1. FRP
 # https://github.com/fatedier/frp/releases
 # linux_amd64
+
+#1.1  阿里云（公网ip）Alibaba_cloud server
 # 安装FRP Install FRP
 wget https://github.com/fatedier/frp/releases/download/v0.33.0/frp_0.33.0_linux_amd64.tar.gz
 # 解压FRP Unzip FRP
@@ -16,7 +24,7 @@ tar xzvf frp_0.15.1_linux_amd64.tar.gz
 # 更改文件夹名称 Change filefold name to "frp"
 mv frp_0.15.1_linux_amd64 frp
 # 设置frps.ini setting frps.ini
-cd /frp/ #path of frps.ini
+cd /frp/ # path of frps.ini
 nano frps.ini
 
 [common]
@@ -24,5 +32,97 @@ bind_port = 7000
 vhost_http_port = 8080 # optional
 dashboard_port = 7500 # optional
 
+# 设置防火墙 Setting fire wall
+cd ~
+ufw allow 7000
+ufw allow 8080
+ufw allow 7500
+ufw allow 58888 # for frpc.ini
+ufw allow 6000 # for frpc.ini
+# 运行frps Start frps
+cd /frp/ # path of frps.ini
+# 直接运行 Directly start
+./frps -c ./frps.ini
+# 后台运行 nohup
+nohup ./frps -c ./frps.ini
+
+#1.2 办公室电脑Office Computer
+# 安装FRP Install FRP
+wget https://github.com/fatedier/frp/releases/download/v0.33.0/frp_0.33.0_linux_amd64.tar.gz
+# 解压FRP Unzip FRP
+tar xzvf frp_0.15.1_linux_amd64.tar.gz
+# 更改文件夹名称 Change filefold name to "frp"
+mv frp_0.15.1_linux_amd64 frp
+# 设置frpc.ini setting frpc.ini
+cd /frp/ # path of frpc.ini
+nano frpc.ini
+
+[common]
+server_addr = 111.111.111.111
+server_port = 7000 # same to bind_port in frps.ini
+
+[ssh]
+local_ip = 127.0.0.1
+local_port = 2222
+remote_port = 6000 # see ufw allow 6000 in the alibaba_server
+
+[web]
+local_ip = 127.0.0.1
+local_port = 8096 # for shadowsocks
+remote_port = 58888 # see ufw allow 58888 in the alibaba_server
+
+# 设置防火墙 Setting fire wall
+cd ~
+ufw allow 2222 
+ufw allow 8096
+ufw allow 1080 # for shadowsocks 
+# 运行frps Start frpc
+cd /frp/ # path of frpc.ini
+# 直接运行 Directly start
+./frpc -c ./frpc.ini
+# 后台运行 nohup
+nohup ./frpc -c ./frpc.ini
+
+# 2. Shadowsocks
+# Pip and update
+apt-get install python-pip
+apt-get install python-setuptools m2crypto
+# Install shadowsocks
+pip install shadowsocks
+# Setting shadowsocks
+nano /etc/shadowsocks.json
+
+{
+	"server": "0.0.0.0",
+	"server_port": 8096, # see local_port = 8096 in frpc.ini
+	"local_port": 1080,
+	"password": "123456",
+	"timeout": 600,
+	"method": "chacha20",
+  "fast_open":false
+}
+
+# Another setting
+nano /usr/local/lib/python2.7/dist-packages/shadowsocks/crypto/openssl.py
+
+Line 52:  libcrypto.EVP_CIPHER_CTX_cleanup.argtypes = (c_void_p,) 
+          ->libcrypto.EVP_CIPHER_CTX_reset.argtypes = (c_void_p,)
+Line 111: libcrypto.EVP_CIPHER_CTX_cleanup.argtypes = (c_void_p,) 
+          ->libcrypto.EVP_CIPHER_CTX_reset.argtypes = (c_void_p,)
+
+# Start ssserver          
+ssserver -c /etc/shadowsocks.json -d start
+
+3. 家里电脑  Home Computer
+# 下载安装shadowsocks Download and install shadowsocks
+https://github.com/shadowsocks/shadowsocks-windows/releases/download/4.1.10.0/Shadowsocks-4.1.10.0.zip
+
+服务器地址server address: 111.111.111.111
+服务器端口server port: 58888 # see remote_port = 58888 in frpc.ini
+密码password: 123456 # see "password": "123456" in shadowsocks.json
+加密method: chacha20 # see "method": "chacha20" in shadowsocks.json
+代理端口proxy port: 1080 # see "local_port": 1080 in shadowsocks.json
+
+#------The End------#
 
 
