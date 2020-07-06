@@ -1,3 +1,67 @@
 A. 阿里云服务器（公网IP) alibaba_cloud server with a ip address
 B. 家用电脑 home computer
 
+# -----------Alibaba_cloud serve----------- #
+# OS: Ubuntu server 18.0
+# User: root
+# IP Address: 111.111.111.111
+# -----------Home Computer----------- #
+# OS: Windows 10
+
+# 1. 阿里云服务器 alibaba_cloud server
+# Install vsftpd
+apt-get install vsftpd
+# Setting vsftpd
+nano /etc/vsftpd.conf
+
+listen=YES
+listen_ipv6=YES
+anonymous_enable=NO
+local_enable=YES
+dirmessage_enable=YES
+use_localtime=YES
+xferlog_enable=YES
+connect_from_port_20=YES
+xferlog_file=/var/log/vsftpd.log
+secure_chroot_dir=/var/run/vsftpd/empty
+pam_service_name=vsftpd
+rsa_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
+rsa_private_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
+ssl_enable=NO
+local_root=/home/ftp/
+
+# Add user group / user
+groupadd ftpuser
+mkdir /home/ftp/    # see local_root=/home/ftp/ in vsftpd.conf
+useradd -g ftpuser usr1
+# setting password
+passwrd usr1
+
+# user permissions
+nano /etc/passwd
+
+usr1:x:1001:1001::/home/ftp:    # see local_root=/home/ftp/ in vsftpd.conf
+usr1:x:1001:1001::/home/ftp:/bin/bash     # see local_root=/home/ftp/ in vsftpd.conf
+
+chown -v -R usr1:ftpuser /home/ftp/
+chmod -v -R 777 /home/ftp/
+
+nano /etc/vsftpd.chroot_list
+
+ftpuser
+
+
+# restart vsftpd
+service vsftpd restart
+
+2. 家用电脑 home computer
+# 下载安装FileZilla Client Download and install FileZilla Client
+# Setting
+站点管理器->新站点->协议“STFP - SSH file Transfer Protocol”->服务器：111.111.111.111->端口 空->登陆类型“正常”->用户 usr1->密码->连接
+site manager -> new site -> protocol “STFP - SSH file Transfer Protocol” -> Host: 111.111.111.111 -> Port: blank -> Logon Type: Normol -> User: usr1 -> password -> Connect
+
+
+
+
+
+
