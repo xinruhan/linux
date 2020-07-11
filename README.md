@@ -20,4 +20,8 @@ C 家里电脑 Home Computer
 
 -See "sftp.txt"
 
+#-----------R & RStudio Server----------- #
 
+-Build a RStudio server
+
+-See "RStudio.txt"
