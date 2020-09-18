@@ -35,7 +35,7 @@ groupadd ftpuser
 mkdir /home/ftp/    # see local_root=/home/ftp/ in vsftpd.conf
 useradd -g ftpuser usr1
 # setting password
-passwrd usr1
+passwd usr1
 
 # user permissions
 nano /etc/passwd
