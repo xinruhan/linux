@@ -1,0 +1,9 @@
+Ali Cloud: Ubuntu
+
+#install baota
+
+wget -O install.sh http://download.bt.cn/install/install-ubuntu_6.0.sh
+
+sudo bash install.sh
+
+https://www.jianshu.com/p/293c94adc11d
